@@ -4,6 +4,7 @@ const { Schema } = mongoose;
 
 const event = new Schema(
   {
+    userid: { type: String },
     date: { type: String, default: Date(Date.now()) },
     evenDescription: { type: String },
   },

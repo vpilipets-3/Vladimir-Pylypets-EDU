@@ -1,1 +1,1 @@
-// db.events.drop();.
+db.events.drop();

@@ -21,7 +21,12 @@ function routes(User) {
       });
     });
 
-  Router.route('/user/:userId')// get user by ID handler
+  Router.route('/user/:userId/del')// get user by ID handler
+    .delete((req, res) => {
+      const tempId = req.params.userId;
+      User.findByIdAndRemove({ _id: tempId });
+      return res.sendStatus(204);
+    })
     .get((req, res) => {
       User.findById(req.params.userId, (err, singleUser) => {
         if (err) {

@@ -1,8 +1,8 @@
 const express = require('express');
 
 function eventRouter(Event) {
-  const Router = express.Router();
-  Router.route('/logs')
+  const EvRouter = express.Router();
+  EvRouter.route('/logs')
     .post((req, res) => { // Create new log
       const newEvent = new Event(req.body);
       newEvent.save();
@@ -18,7 +18,7 @@ function eventRouter(Event) {
       });
     });
 
-  Router.route('/logs/?userid=identifier')
+  EvRouter.route('/logs/?userid=identifier')
     .get((req, res) => { // List all logs by userID
       Event.findById(req.params.identfier, (err, events) => {
         if (err) {
@@ -27,7 +27,7 @@ function eventRouter(Event) {
         return res.json(events);
       });
     });
-  Router.route('/logs/:logid')
+  EvRouter.route('/logs/:logid')
     .get((req, res) => { // List list particular log
       Event.findById(req.params.logid, (err, log) => {
         if (err) {
@@ -56,7 +56,7 @@ function eventRouter(Event) {
         return res.sendStatus(204);
       });
     });
-  return Router;
+  return EvRouter;
 }
 
 module.exports = eventRouter;

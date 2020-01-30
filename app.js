@@ -5,21 +5,19 @@ const bodyParser = require('body-parser');
 const app = express();
 const db = mongoose.connect('mongodb://localhost/EDU');
 const port = process.env.PORT || 3000;
-const Event = require('./models/userSchema');
 const User = require('./models/eventSchema');
-const Router = require('./routes/Router')(User);
-const EventRouter = require('./routes/EventRouter')(Event);
+const Event = require('./models/userSchema');
+const Router = require('./routes/Router')(Event);
+const EventRouter = require('./routes/EventRouter')(User);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use('/', Router);
-app.use('/', EventRouter);
+app.use('/', EventRouter, Router);
 
 app.get('/', (request, response) => { // Home page handler
   response.send('hi!');
 });
-
 
 /*
 Router.route('/logs/startDateendDate')

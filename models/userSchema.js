@@ -8,7 +8,6 @@ const users = new Schema(
     firstName: { type: String },
     lastName: { type: String },
     lastActivity: { type: String, default: null },
-    eventid: { type: String, default: null },
   },
 );
 

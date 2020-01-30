@@ -17,6 +17,20 @@ function eventRouter(Event) {
         return res.json(events);
       });
     });
+  EvRouter.route('/logs/date')
+    .get((req, res) => { // List all logs by userID
+      Event.find({
+        date: {
+          $gte: new Date('2020-01-25'),
+          $lt: new Date('2020-03-25'),
+        },
+      }, (err, events) => {
+        if (err) {
+          return res.send(err);
+        }
+        return res.json(events);
+      });
+    });
 
   EvRouter.route('/logs/?userid=identifier')
     .get((req, res) => { // List all logs by userID

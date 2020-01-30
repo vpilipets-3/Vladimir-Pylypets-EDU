@@ -56,13 +56,6 @@ function eventRouter(Event) {
         return res.sendStatus(204);
       });
     });
-  EvRouter.route('/user/delId')// get user by ID handler
-    .delete((req, res) => {
-      const tempId = req.params.delId;
-      Event.findByIdAndRemove({ userid: tempId });
-      return res.sendStatus(204);
-    });
-
   return EvRouter;
 }
 

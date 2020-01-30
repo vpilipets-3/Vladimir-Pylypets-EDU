@@ -1,4 +1,8 @@
 const express = require('express');
+const event = require('../models/eventSchema');
+
+const logs = event.collection;
+
 
 function routes(User) {
   const Router = express.Router();
@@ -21,11 +25,15 @@ function routes(User) {
       });
     });
 
-  Router.route('/user/:userId/del')// get user by ID handler
-    .delete((req, res) => {
-      const tempId = req.params.userId;
-      User.findByIdAndRemove({ _id: tempId });
-      return res.sendStatus(204);
+  Router.route('/user/:userId')// get user by ID handler
+    .delete((req, res) => { // Delete particular user and dependecies
+      logs.deleteMany({ userid: req.params.userId });
+      User.findById(req.params.userId).remove((err) => {
+        if (err) {
+          return res.send(err);
+        }
+        return res.sendStatus(204);
+      });
     })
     .get((req, res) => {
       User.findById(req.params.userId, (err, singleUser) => {

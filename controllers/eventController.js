@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 function eventController(Event) {
   function createLog(req, res) {
     const newEvent = new Event(req.body);
@@ -62,7 +63,9 @@ function eventController(Event) {
       return res.sendStatus(204);
     });
   }
-  return { createLog, lsLog, date, getLogsByUserId, showOneLog, editLog, deleteLog };
+  return {
+    createLog, lsLog, date, getLogsByUserId, showOneLog, editLog, deleteLog,
+  };
 }
 
 

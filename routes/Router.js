@@ -16,16 +16,3 @@ function routes(User) {
 }
 
 module.exports = routes;
-
-/*
-  Router.route('/event')
-  .get((req, res) => {
-    const { query } = req;
-    event.find(query, (err, events) => {
-      if (err) {
-        return res.send(err);
-      }
-      return res.json(events);
-    });
-  });
-*/

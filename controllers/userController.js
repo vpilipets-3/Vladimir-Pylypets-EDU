@@ -5,7 +5,9 @@ const logs = event.collection;
 function userController(User) {
   function createNewUser(req, res) {
     const newUser = new User(req.body);
-    newUser.save();
+    req.login(req.body, () => {
+      newUser.save();
+    });
     return res.status(201).json(newUser);
   }
   function lsUsers(req, res) {
@@ -37,6 +39,7 @@ function userController(User) {
       return res.sendStatus(204);
     });
   }
+
   return {
     createNewUser, lsUsers, showOneUser, deleteUser,
   };

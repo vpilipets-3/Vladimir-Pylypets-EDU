@@ -11,6 +11,7 @@ function eventController(Event) {
       if (err) {
         return res.send(err);
       }
+      console.log(events.length);
       return res.json(events);
     });
   }

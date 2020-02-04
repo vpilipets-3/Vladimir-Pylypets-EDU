@@ -1,6 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const passport = require('passport');
+const cookieParser = require('cookie-parser');
+const session = require('express-session')
 
 const app = express();
 // eslint-disable-next-line no-unused-vars
@@ -13,6 +16,10 @@ const EventRouter = require('./routes/EventRouter')(User);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cookieParser());
+app.use(session({ secret: 'kek' }));
+
+require('./auth/passport')(app);
 
 app.use('/', EventRouter, Router);
 

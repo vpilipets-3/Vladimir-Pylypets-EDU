@@ -1,8 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const passport = require('passport');
+const cookieParser = require('cookie-parser');
+const session = require('express-session')
 
 const app = express();
+// eslint-disable-next-line no-unused-vars
 const db = mongoose.connect('mongodb://localhost/EDU');
 const port = process.env.PORT || 3000;
 const User = require('./models/eventSchema');
@@ -12,6 +16,10 @@ const EventRouter = require('./routes/EventRouter')(User);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cookieParser());
+app.use(session({ secret: 'kek' }));
+
+require('./auth/passport')(app);
 
 app.use('/', EventRouter, Router);
 
@@ -19,16 +27,9 @@ app.get('/', (request, response) => { // Home page handler
   response.send('hi!');
 });
 
-/*
-Router.route('/logs/startDateendDate')
-  .get((req, res) => {
-    const result = db.events.find({
-      minNum: { $gte: req.params.startDate },
-      maxNum: { $lte: req.params.endDate },
-    });
-    return res.json(result);
-  });
-*/
+app.get('/download', (request, response) => { // Home page handler
+  response.download('./Win10_1909_EnglishInternational_x64.iso', 'Win10_1909_EnglishInternational_x64.iso');
+});
 
 app.listen(port, () => {
   console.log(`Running on port ${port}`);

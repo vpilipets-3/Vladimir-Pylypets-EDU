@@ -1,13 +1,11 @@
-const mongoose = require('mongoose');
-
-const { Schema } = mongoose;
+const { Schema, model } = require('mongoose');
 
 const event = new Schema(
-  {
-    userid: { type: String },
-    date: { type: Date, default: Date.now },
-    evenDescription: { type: String },
-  },
+	{
+		userid: { type: String, required: true },
+		date: { type: Date, default: Date.now, required: false },
+		eventDescription: { type: String, required: true },
+	},
 );
 
-module.exports = mongoose.model('event', event);
+module.exports = model('events', event);

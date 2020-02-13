@@ -1,36 +1,30 @@
 const express = require('express');
+const config = require('config');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const passport = require('passport');
-const cookieParser = require('cookie-parser');
-const session = require('express-session')
 
 const app = express();
-// eslint-disable-next-line no-unused-vars
-const db = mongoose.connect('mongodb://localhost/EDU');
-const port = process.env.PORT || 3000;
-const User = require('./models/eventSchema');
-const Event = require('./models/userSchema');
-const Router = require('./routes/Router')(Event);
-const EventRouter = require('./routes/EventRouter')(User);
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(cookieParser());
-app.use(session({ secret: 'kek' }));
+app.use(express.json({ extended: true }));
 
-require('./auth/passport')(app);
+app.use('/api/auth', require('./routes/auth.route'), require('./routes/events.route'));
 
-app.use('/', EventRouter, Router);
+const PORT = config.get('port') || 3000;
 
-app.get('/', (request, response) => { // Home page handler
-  response.send('hi!');
-});
+async function start() {
+	try {
+		await mongoose.connect(config.get('mongoUri'), {
+			useNewUrlParser: true,
+			useUnifiedTopology: true,
+			useCreateIndex: true,
+		});
+		console.log('connected');
+	} catch (e) {
+		console.log('Server error', e.message);
+		process.exit(1);
+	}
+}
 
-app.get('/download', (request, response) => { // Home page handler
-  response.download('./Win10_1909_EnglishInternational_x64.iso', 'Win10_1909_EnglishInternational_x64.iso');
-});
-
-app.listen(port, () => {
-  console.log(`Running on port ${port}`);
+start();
+app.listen(PORT, () => {
+	console.log(`Running on port ${PORT}`);
 });

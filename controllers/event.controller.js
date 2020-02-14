@@ -20,45 +20,45 @@ const EventController = {
 		}
 	},
 	showLogs: async (req, res) => {
-		await	Event.find((err, events) => {
-			if (err) {
-				return res.send(err);
-			}
-			return res.json(events);
-		});
+		try {
+			const result = await Event.find();
+			return res.json(result);
+		} catch (e) {
+			return res.status(500).json({ message: 'Internal server error' });
+		}
 	},
 	showLogsByUserId: async (req, res) => {
-		await	Event.findById(req.params.userId, (err, singleLog) => {
-			if (err) {
-				return res.send(err);
-			}
+		try {
+			const singleLog = await Event.findById(req.params.userId);
 			return res.status(200).json(singleLog);
-		});
+		} catch (e) {
+			return res.status(500).json({ message: 'Internal server error' });
+		}
 	},
 	showLogsByDate: async (req, res) => {
-		Event.find({
-			date: {
-				$gte: new Date('2020-01-11'),
-				$lt: new Date('2020-03-25'),
-			},
-		}, (err, events) => {
-			if (err) {
-				return res.send(err);
-			}
+		try {
+			const events = await Event.find({
+				date: {
+					$gte: new Date(req.body.from),
+					$lt: new Date(req.body.to),
+				},
+			});
 			return res.json(events);
-		});
+		} catch (e) {
+			return res.status(500).json({ message: 'Internal server error' });
+		}
 	},
-	UpdateLog: async (req, res) => {
-		Event.findById(req.params.logid, (err, log) => {
-			if (err) {
-				return res.send(err);
-			}
+	updateLog: async (req, res) => {
+		try {
+			const log = await Event.findById(req.params.logid);
 			Event.date = req.body.date;
 			Event.userid = req.body.userid;
 			Event.eventDescription = req.body.evenDescription;
-			log.save();
+			await log.save();
 			return res.json(log);
-		});
+		} catch (e) {
+			return res.status(500).json({ message: 'Internal server error' });
+		}
 	},
 };
 

@@ -38,7 +38,7 @@ const userController = {
 			const isMatch = await bcrypt.compare(password, user.password);
 
 			if (!isMatch) {
-				throw	res.status(400).json({ message: 'Invalid email or password, try again' });
+				throw res.status(400).json({ message: 'Invalid email or password, try again' });
 			}
 
 			const token = jwt.sign(
@@ -53,28 +53,28 @@ const userController = {
 		}
 	},
 	showUsers: async (req, res) => {
-		User.find((err, users) => {
-			if (err) {
-				return res.send(err);
-			}
-			return res.json(users);
-		});
+		try {
+			const result = await User.find();
+			return res.json(result);
+		} catch (e) {
+			return res.status(500).json({ message: e });
+		}
 	},
 	showOneUser: async (req, res) => {
-		User.findById(req.params.userId, (err, singleUser) => {
-			if (err) {
-				return res.send(err);
-			}
+		try {
+			const singleUser = await User.findById(req.params.userId);
 			return res.json(singleUser);
-		});
+		} catch (e) {
+			return res.status(500).json({ message: e });
+		}
 	},
 	deleteUser: async (req, res) => {
-		User.findById(req.params.userId).deleteOne((err) => {
-			if (err) {
-				return res.send(err);
-			}
+		try {
+			await User.findById(req.params.userId).deleteOne();
 			return res.sendStatus(204);
-		});
+		} catch (e) {
+			return res.status(500).json({ message: e });
+		}
 	},
 };
 

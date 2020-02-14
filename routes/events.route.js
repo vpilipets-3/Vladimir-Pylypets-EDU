@@ -19,7 +19,7 @@ router.get('/logs', eventController.showLogs);
 
 router.get('/logs/:userId', auth, eventController.showLogsByUserId);
 
-router.get('/logs/date', auth, eventController.showLogsByDate);
+router.post('/logs/date', eventController.showLogsByDate);
 
 router.put(
 	'/logs/:logid',
@@ -29,7 +29,7 @@ router.put(
 		check('date').exists(),
 	],
 	auth,
-	eventController.UpdateLog,
+	eventController.updateLog,
 );
 
 module.exports = router;

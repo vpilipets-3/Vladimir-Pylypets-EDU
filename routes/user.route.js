@@ -26,9 +26,9 @@ router.post(
 	userController.authUser,
 );
 
-router.get('/users', auth, userController.showUsers);
+router.get('/users', userController.showUsers);
 
-router.get('/users/:userId', auth, userController.showOneUser);
+router.get('/users/:userId', userController.showOneUser);
 
 router.delete('/users/:userId', auth, userController.deleteUser);
 

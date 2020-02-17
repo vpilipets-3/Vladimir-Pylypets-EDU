@@ -1,6 +1,4 @@
 const bcrypt = require('bcryptjs');
-const config = require('config');
-const jwt = require('jsonwebtoken');
 const User = require('../models/userSchema');
 
 const userController = {
@@ -17,7 +15,7 @@ const userController = {
 
 			const hashedPassword = await bcrypt.hash(password, 12);
 			const user = new User({
-				email, password: hashedPassword, firstName, lastName, lastActivity,
+				email, password: hashedPassword, firstName, lastName, lastActivity, manager: req.manager.managerId,
 			});
 			await user.save();
 
@@ -26,35 +24,9 @@ const userController = {
 			return res.status(500).json({ message: e });
 		}
 	},
-	authUser: async (req, res) => {
-		try {
-			const { email, password } = req.body;
-			const user = await User.findOne({ email });
-
-			if (!user) {
-				throw res.status(400).json({ message: 'User with this credentials doesn\'t exist' });
-			}
-
-			const isMatch = await bcrypt.compare(password, user.password);
-
-			if (!isMatch) {
-				throw res.status(400).json({ message: 'Invalid email or password, try again' });
-			}
-
-			const token = jwt.sign(
-				{ userId: user.id },
-				config.get('jwtSecret'),
-				{ expiresIn: '1h' },
-			);
-
-			return res.json({ token, userId: user.id });
-		} catch (e) {
-			return res.status(500).json({ message: e });
-		}
-	},
 	showUsers: async (req, res) => {
 		try {
-			const result = await User.find();
+			const result = await User.find({ manager: req.manager.managerId });
 			return res.json(result);
 		} catch (e) {
 			return res.status(500).json({ message: e });

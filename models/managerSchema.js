@@ -6,10 +6,9 @@ const schema = new Schema(
 		password: { type: String, required: true },
 		firstName: { type: String, required: true },
 		lastName: { type: String, required: true },
-		lastActivity: { type: String, default: 'just registered' },
-		manager: { type: Types.ObjectId, ref: 'managers' },
+		users: [{ type: Types.ObjectId, ref: 'users' }],
 	},
 );
 
 
-module.exports = model('users', schema);
+module.exports = model('managers', schema);

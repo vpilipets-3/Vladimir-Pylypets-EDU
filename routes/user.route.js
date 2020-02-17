@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
+const managerController = require('../controllers/manager.controller');
 const userController = require('../controllers/user.controller');
 
 const auth = require('../mddleware/auth.middleware');
@@ -14,7 +15,7 @@ router.post(
 		check('firstName', 'Name required').exists(),
 		check('lastName', 'Secondname required').exists(),
 	],
-	userController.createUser,
+	managerController.createManager,
 );
 
 router.post(
@@ -23,10 +24,22 @@ router.post(
 		check('email', 'Please input valid email').normalizeEmail().isEmail(),
 		check('password', 'Please input your password').exists(),
 	],
-	userController.authUser,
+	managerController.authManager,
 );
 
-router.get('/users', userController.showUsers);
+router.post(
+	'/createUser',
+	[
+		check('email', 'Invalid email').isEmail(),
+		check('password', 'Password should be at list 6 characters').isLength({ min: 6 }),
+		check('firstName', 'Name required').exists(),
+		check('lastName', 'Secondname required').exists(),
+	],
+	auth,
+	userController.createUser,
+);
+
+router.get('/users', auth, userController.showUsers);
 
 router.get('/users/:userId', userController.showOneUser);
 

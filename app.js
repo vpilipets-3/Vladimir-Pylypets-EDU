@@ -17,14 +17,14 @@ async function start() {
 			useUnifiedTopology: true,
 			useCreateIndex: true,
 		});
-		console.log('connected');
+		console.log(color.bold.green('Connected to DB'));
 	} catch (e) {
-		console.log('Server error', e.message);
+		console.log(color.bold.red(`ERROR!\nCould not connect to DB\n ${color.cyan(e.message)}`));
 		process.exit(1);
 	}
 }
 
 start();
 app.listen(PORT, () => {
-	console.log(color.magenta(`Running on port ${color.magenta.bgBlack(PORT)}`));
+	console.log(color.magenta(`Running on port ${color.yellow.bgBlack(PORT)}`));
 });

@@ -40,9 +40,7 @@ const userController = {
 	showOneUser: async (req, res) => {
 		try {
 			const singleUser = await User.findById(req.params.userId);
-			console.log(typeof singleUser.manager);
-			console.log(typeof req.manager.managerId);
-			if (singleUser.manager.id !== req.manager.managerId) {
+			if (String(singleUser.manager) !== req.manager.managerId) {
 				return res.status(403).json({ message: 'Premission denied' });
 			}
 			return res.json(singleUser);
@@ -52,7 +50,11 @@ const userController = {
 	},
 	deleteUser: async (req, res) => {
 		try {
-			await User.findById(req.params.userId).deleteOne();
+			const candidate = await User.findById(req.params.userId);
+			if (String(candidate.manager) !== req.manager.managerId) {
+				return res.status(403).json({ message: 'Premission denied' });
+			}
+			candidate.deleteOne();
 			return res.sendStatus(204);
 		} catch (e) {
 			return res.status(500).json({ message: e });
@@ -61,9 +63,12 @@ const userController = {
 	updateUser: async (req, res) => {
 		try {
 			const user = await User.findById(req.params.userId);
-			User.firstName = req.body.firstName;
-			User.lastName = req.body.lastName;
-			User.email = req.body.email;
+			if (String(user.manager) !== req.manager.managerId) {
+				return res.status(403).json({ message: 'Premission denied' });
+			}
+			user.firstName = req.body.firstName;
+			user.lastName = req.body.lastName;
+			user.email = req.body.email;
 			await user.save();
 			return res.json(user);
 		} catch (e) {

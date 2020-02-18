@@ -34,6 +34,7 @@ router.post(
 		check('firstName').exists(),
 		check('lastName').exists(),
 	],
+	auth,
 	userController.updateUser,
 );
 

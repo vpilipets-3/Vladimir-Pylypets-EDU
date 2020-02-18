@@ -1,11 +1,13 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model, Types } = require('mongoose');
 
 const event = new Schema(
 	{
-		userid: { type: String, required: true },
+		userid: { type: Types.ObjectId, ref: 'users' },
 		date: { type: Date, default: Date.now, required: false },
 		eventDescription: { type: String, required: true },
 	},
+
+	{ versionKey: false },
 );
 
 module.exports = model('events', event);

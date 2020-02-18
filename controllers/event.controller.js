@@ -29,8 +29,8 @@ const EventController = {
 	},
 	showLogsByUserId: async (req, res) => {
 		try {
-			const singleLog = await Event.findById(req.params.userId);
-			return res.status(200).json(singleLog);
+			const Logs = await Event.findById({ userid: req.event.userid });
+			return res.status(200).json(Logs);
 		} catch (e) {
 			return res.status(500).json({ message: 'Internal server error' });
 		}

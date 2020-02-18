@@ -40,9 +40,14 @@ const userController = {
 	showOneUser: async (req, res) => {
 		try {
 			const singleUser = await User.findById(req.params.userId);
+			console.log(typeof singleUser.manager);
+			console.log(typeof req.manager.managerId);
+			if (singleUser.manager.id !== req.manager.managerId) {
+				return res.status(403).json({ message: 'Premission denied' });
+			}
 			return res.json(singleUser);
 		} catch (e) {
-			return res.status(500).json({ message: e });
+			return res.status(500).json({ message: `${e}` });
 		}
 	},
 	deleteUser: async (req, res) => {

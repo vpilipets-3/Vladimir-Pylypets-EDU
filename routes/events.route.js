@@ -6,10 +6,10 @@ const router = Router();
 const eventController = require('../controllers/event.controller');
 
 router.post(
-	'/logs',
+	'/createLog',
 	[
-		check('user', 'Please input userID').exists(),
-		check('eventDescription', 'Log must contain eventDescription').exists().isString(),
+		check('userid', 'Please input userID').exists(),
+		check('eventDescription', 'Log must contain eventDescription').exists(),
 	],
 	auth,
 	eventController.createLog,
@@ -25,7 +25,7 @@ router.put(
 	'/logs/:logid',
 	[
 		check('userid').exists(),
-		check('eventDesctiption').exists(),
+		check('eventDesctiption').exists().isString(),
 		check('date').exists(),
 	],
 	auth,

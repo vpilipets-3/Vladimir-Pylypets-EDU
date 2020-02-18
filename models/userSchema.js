@@ -7,7 +7,7 @@ const schema = new Schema(
 		firstName: { type: String, required: true },
 		lastName: { type: String, required: true },
 		lastActivity: { type: String, default: 'just registered' },
-		manager: { type: Types.ObjectId, ref: 'managers', select: false },
+		manager: { type: Types.ObjectId, ref: 'managers' },
 	},
 
 	{ versionKey: false },

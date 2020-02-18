@@ -48,7 +48,7 @@ const managerController = {
 				{ expiresIn: '7h' },
 			);
 
-			return res.json({ token, managerId: manager.id });
+			return res.json({ token });
 		} catch (e) {
 			return res.status(500).json({ message: e });
 		}

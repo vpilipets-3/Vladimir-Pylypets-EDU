@@ -28,6 +28,16 @@ router.post(
 );
 
 router.post(
+	'/users/:userId',
+	[
+		check('email', 'Please input valid email').normalizeEmail().isEmail(),
+		check('firstName').exists(),
+		check('lastName').exists(),
+	],
+	userController.updateUser,
+);
+
+router.post(
 	'/createUser',
 	[
 		check('email', 'Invalid email').isEmail(),

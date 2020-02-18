@@ -8,7 +8,7 @@ const eventController = require('../controllers/event.controller');
 router.post(
 	'/logs',
 	[
-		check('userid', 'Please input userID').exists(),
+		check('user', 'Please input userID').exists(),
 		check('eventDescription', 'Log must contain eventDescription').exists().isString(),
 	],
 	auth,

@@ -13,7 +13,7 @@ const managerController = {
 			const candidate = await Manager.findOne({ email });
 
 			if (candidate) {
-				throw res.status(400).json({ message: 'Manager with simillar email already exists' });
+				return res.status(400).json({ message: 'Manager with simillar email already exists' });
 			}
 
 			const hashedPassword = await bcrypt.hash(password, 12);
@@ -33,13 +33,13 @@ const managerController = {
 			const manager = await Manager.findOne({ email });
 
 			if (!manager) {
-				throw res.status(400).json({ message: 'Manager with these credentials doesn\'t exist' });
+				return res.status(400).json({ message: 'Manager with these credentials doesn\'t exist' });
 			}
 
 			const isMatch = await bcrypt.compare(password, manager.password);
 
 			if (!isMatch) {
-				throw res.status(400).json({ message: 'Invalid email or password, try again' });
+				return res.status(400).json({ message: 'Invalid email or password, try again' });
 			}
 
 			const token = jwt.sign(

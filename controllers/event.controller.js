@@ -15,7 +15,7 @@ const EventController = {
 		try {
 			const candidate = await Users.findById(req.body.userid);
 			if (String(candidate.manager) !== req.manager.managerId) {
-				throw res.status(403).json({ message: 'Premission denied!' });
+				return res.status(403).json({ message: 'Premission denied!' });
 			}
 			const event = new Event({ userid, date, eventDescription });
 			await event.save();

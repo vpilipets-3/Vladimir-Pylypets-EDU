@@ -8,46 +8,46 @@ const auth = require('../mddleware/auth.middleware');
 const router = Router();
 
 router.post(
-	'/register',
-	[
-		check('email', 'Invalid email').isEmail(),
-		check('password', 'Password should be at list 6 characters').isLength({ min: 6 }),
-		check('firstName', 'Name required').exists(),
-		check('lastName', 'Secondname required').exists(),
-	],
-	managerController.createManager,
+  '/register',
+  [
+    check('email', 'Invalid email').isEmail(),
+    check('password', 'Password should be at list 6 characters').isLength({ min: 6 }),
+    check('firstName', 'Name required').exists(),
+    check('lastName', 'Secondname required').exists(),
+  ],
+  managerController.createManager,
 );
 
 router.post(
-	'/login',
-	[
-		check('email', 'Please input valid email').normalizeEmail().isEmail(),
-		check('password', 'Please input your password').exists(),
-	],
-	managerController.authManager,
+  '/login',
+  [
+    check('email', 'Please input valid email').normalizeEmail().isEmail(),
+    check('password', 'Please input your password').exists(),
+  ],
+  managerController.authManager,
 );
 
 router.post(
-	'/users/:userId',
-	[
-		check('email', 'Please input valid email').normalizeEmail().isEmail(),
-		check('firstName').exists(),
-		check('lastName').exists(),
-	],
-	auth,
-	userController.updateUser,
+  '/users/:userId',
+  [
+    check('email', 'Please input valid email').normalizeEmail().isEmail(),
+    check('firstName').exists(),
+    check('lastName').exists(),
+  ],
+  auth,
+  userController.updateUser,
 );
 
 router.post(
-	'/createUser',
-	[
-		check('email', 'Invalid email').isEmail(),
-		check('password', 'Password should be at list 6 characters').isLength({ min: 6 }),
-		check('firstName', 'Name required').exists(),
-		check('lastName', 'Secondname required').exists(),
-	],
-	auth,
-	userController.createUser,
+  '/createUser',
+  [
+    check('email', 'Invalid email').isEmail(),
+    check('password', 'Password should be at list 6 characters').isLength({ min: 6 }),
+    check('firstName', 'Name required').exists(),
+    check('lastName', 'Secondname required').exists(),
+  ],
+  auth,
+  userController.createUser,
 );
 
 router.get('/users', auth, userController.showUsers);

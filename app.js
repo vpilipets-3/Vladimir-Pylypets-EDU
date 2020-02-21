@@ -11,20 +11,20 @@ app.use('/api/auth', require('./routes/user.route'), require('./routes/events.ro
 const PORT = config.get('port') || 3000;
 
 async function start() {
-	try {
-		await mongoose.connect(config.get('mongoUri'), {
-			useNewUrlParser: true,
-			useUnifiedTopology: true,
-			useCreateIndex: true,
-		});
-		console.log(color.bold.green('Connected to DB'));
-	} catch (e) {
-		console.log(color.bold.red(`ERROR!\nCould not connect to DB\n ${color.cyan(e.message)}`));
-		process.exit(1);
-	}
+  try {
+    await mongoose.connect(config.get('mongoUri'), {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+    });
+    console.log(color.bold.green('Connected to DB'));
+  } catch (e) {
+    console.log(color.bold.red(`ERROR!\nCould not connect to DB\n ${color.cyan(e.message)}`));
+    process.exit(1);
+  }
 }
 
 start();
 app.listen(PORT, () => {
-	console.log(color.magenta(`Running on port ${color.yellow.bgBlack(PORT)}`));
+  console.log(color.magenta(`Running on port ${color.yellow.bgBlack(PORT)}`));
 });

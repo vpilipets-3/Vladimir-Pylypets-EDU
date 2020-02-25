@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const User = require('../models/userSchema');
+const db = require('../models');
 
 const userController = {
   createUser: async (req, res) => {
@@ -7,23 +7,21 @@ const userController = {
       const {
         email, password, firstName, lastName, lastActivity,
       } = req.body;
-      const candidate = await User.findOne({ email });
+      const candidate = await db.User.findOne({ where: { email: req.body.email } });
 
       if (candidate) {
-        throw res.status(400).json({ message: 'User with simillar email already exists' });
+        return res.status(400).json({ message: 'User with simillar email already exists' });
       }
-
+      console.log(req.manager);
       const hashedPassword = await bcrypt.hash(password, 12);
-      const user = new User({
+      await db.User.create({
         email,
         password: hashedPassword,
         firstName,
         lastName,
         lastActivity,
-        manager: req.manager.managerId,
+        managerId: req.manager.managerId,
       });
-      await user.save();
-
       return res.status(201).json({ message: 'User has been created' });
     } catch (e) {
       return res.status(500).json({ message: e });
@@ -31,7 +29,7 @@ const userController = {
   },
   showUsers: async (req, res) => {
     try {
-      const result = await User.find({ manager: req.manager.managerId });
+      const result = await db.User.findAll({ where: { managerId: req.manager.managerId } });
       return res.json(result);
     } catch (e) {
       return res.status(500).json({ message: e });
@@ -39,8 +37,8 @@ const userController = {
   },
   showOneUser: async (req, res) => {
     try {
-      const singleUser = await User.findById(req.params.userId);
-      if (String(singleUser.manager) !== req.manager.managerId) {
+      const singleUser = await db.User.findByPk(req.params.userId);
+      if (singleUser.managerId !== (req.manager.managerId)) {
         return res.status(403).json({ message: 'Premission denied' });
       }
       return res.json(singleUser);
@@ -50,26 +48,36 @@ const userController = {
   },
   deleteUser: async (req, res) => {
     try {
-      const candidate = await User.findById(req.params.userId);
-      if (String(candidate.manager) !== req.manager.managerId) {
+      const candidate = await db.User.findByPk(req.params.userId);
+      if (candidate.managerId !== (req.manager.managerId)) {
         return res.status(403).json({ message: 'Premission denied' });
       }
-      candidate.deleteOne();
-      return res.sendStatus(204);
+      await db.User.destroy({
+        where: {
+          id: req.params.userId,
+        },
+      });
+      return res.status(204).json({ message: 'Deleted' });
     } catch (e) {
       return res.status(500).json({ message: e });
     }
   },
   updateUser: async (req, res) => {
     try {
-      const user = await User.findById(req.params.userId);
-      if (String(user.manager) !== req.manager.managerId) {
+      const user = await db.User.findByPk(req.params.userId);
+      if (user.managerId !== (req.manager.managerId)) {
         return res.status(403).json({ message: 'Premission denied' });
       }
-      user.firstName = req.body.firstName;
-      user.lastName = req.body.lastName;
-      user.email = req.body.email;
-      await user.save();
+      await db.User.update({
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+      },
+      {
+        where: {
+          id: req.params.userId,
+        },
+      });
       return res.json(user);
     } catch (e) {
       return res.status(500).json({ message: 'Internal server error' });

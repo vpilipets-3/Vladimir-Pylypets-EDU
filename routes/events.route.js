@@ -14,7 +14,7 @@ router.post(
   auth,
   eventController.createLog,
 );
-
+/*
 router.get('/logs', auth, eventController.showLogs);
 
 router.get('/logs/:userId', auth, eventController.showLogsByUserId);
@@ -31,5 +31,5 @@ router.put(
   auth,
   eventController.updateLog,
 );
-
+*/
 module.exports = router;

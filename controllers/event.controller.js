@@ -1,24 +1,14 @@
-const { validationResult } = require('express-validator');
-const Users = require('../models/userSchema');
-const Event = require('../models/eventSchema');
+const db = require('../models');
 
 const EventController = {
   createLog: async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.stats(400).json({
-        errors: errors.array(),
-        message: 'Invalid data while creating new log',
-      });
-    }
-    const { userid, date, eventDescription } = req.body;
+    const { userid, eventDescription } = req.body;
     try {
-      const candidate = await Users.findById(req.body.userid);
+      const candidate = await db.Users.findByPk(req.body.userid);
       if (String(candidate.manager) !== req.manager.managerId) {
         return res.status(403).json({ message: 'Premission denied!' });
       }
-      const event = new Event({ userid, date, eventDescription });
-      await event.save();
+      await db.Event.create({ userid, eventDescription });
       return res.status(201).json({ message: 'New log has been created' });
     } catch (e) {
       return res.status(500).json({ message: 'Something went wrong while creating new log' });
@@ -26,24 +16,19 @@ const EventController = {
   },
   showLogs: async (req, res) => {
     try {
-      const managedUsers = await Users.find({ manager: req.manager.managerId });
-      const events = await Event.find({
-        userid: {
-          $in: managedUsers,
-        },
-      });
-      return res.json(events);
+    // const managedUsers = await db.Users.findAll({ where: { managerId: req.manager.managerId } });
+      return res.json();
     } catch (e) {
       return res.status(500).json({ message: 'Internal server error' });
     }
   },
   showLogsByUserId: async (req, res) => {
     try {
-      const candidate = await Users.findById(req.params.userid);
+      const candidate = await db.Users.findByPk(req.params.userid);
       if (String(candidate.manager) !== req.manager.managerId) {
         throw res.status(403).json({ message: 'Premission denied!' });
       }
-      const Logs = await Event.find();
+      const Logs = await db.Event.findAll();
       return res.status(200).json(Logs);
     } catch (e) {
       return res.status(500).json({ message: 'Internal server error' });

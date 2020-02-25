@@ -1,30 +1,24 @@
 const express = require('express');
-const config = require('config');
-const mongoose = require('mongoose');
 const color = require('colors');
+const logger = require('morgan');
+const db = require('./models');
+// const bodyParser = require('body-parser');
 
 const app = express();
+app.use(logger('dev'));
 
-app.use(express.json({ extended: true }));
-app.use('/api/auth', require('./routes/user.route'), require('./routes/events.route'));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-const PORT = config.get('port') || 3000;
+const PORT = process.env.PORT || 3000;
 
-async function start() {
-  try {
-    await mongoose.connect(config.get('mongoUri'), {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useCreateIndex: true,
-    });
-    console.log(color.bold.green('Connected to DB'));
-  } catch (e) {
-    console.log(color.bold.red(`ERROR!\nCould not connect to DB\n ${color.cyan(e.message)}`));
-    process.exit(1);
-  }
-}
+const connect = async () => {
+  await db.sequelize.sync();
+  app.listen(PORT, () => {
+    console.log(color.magenta(`Running on port ${color.yellow.bgBlack(PORT)}`));
+  });
+};
 
-start();
-app.listen(PORT, () => {
-  console.log(color.magenta(`Running on port ${color.yellow.bgBlack(PORT)}`));
-});
+connect();
+
+app.use('/api', require('./routes/auth.route'), require('./routes/user.route'), require('./routes/events.route'));

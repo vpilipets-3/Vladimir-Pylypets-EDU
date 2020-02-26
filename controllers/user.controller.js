@@ -12,7 +12,6 @@ const userController = {
       if (candidate) {
         return res.status(400).json({ message: 'User with simillar email already exists' });
       }
-      console.log(req.manager);
       const hashedPassword = await bcrypt.hash(password, 12);
       await db.User.create({
         email,
@@ -24,7 +23,7 @@ const userController = {
       });
       return res.status(201).json({ message: 'User has been created' });
     } catch (e) {
-      return res.status(500).json({ message: e });
+      return res.status(500).json({ message: 'Internal server error' });
     }
   },
   showUsers: async (req, res) => {
@@ -32,24 +31,24 @@ const userController = {
       const result = await db.User.findAll({ where: { managerId: req.manager.managerId } });
       return res.json(result);
     } catch (e) {
-      return res.status(500).json({ message: e });
+      return res.status(500).json({ message: 'Internal server error' });
     }
   },
   showOneUser: async (req, res) => {
     try {
       const singleUser = await db.User.findByPk(req.params.userId);
-      if (singleUser.managerId !== (req.manager.managerId)) {
+      if (singleUser.managerId !== req.manager.managerId) {
         return res.status(403).json({ message: 'Premission denied' });
       }
       return res.json(singleUser);
     } catch (e) {
-      return res.status(500).json({ message: `${e}` });
+      return res.status(500).json({ message: 'Internal server error' });
     }
   },
   deleteUser: async (req, res) => {
     try {
       const candidate = await db.User.findByPk(req.params.userId);
-      if (candidate.managerId !== (req.manager.managerId)) {
+      if (candidate.managerId !== req.manager.managerId) {
         return res.status(403).json({ message: 'Premission denied' });
       }
       await db.User.destroy({
@@ -59,7 +58,7 @@ const userController = {
       });
       return res.status(204).json({ message: 'Deleted' });
     } catch (e) {
-      return res.status(500).json({ message: e });
+      return res.status(500).json({ message: 'Internal server error' });
     }
   },
   updateUser: async (req, res) => {

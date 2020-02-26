@@ -28,24 +28,11 @@ router.put(
 );
 
 
-router.get(
-  '/users/all',
-  auth,
-  userController.showUsers,
-);
+router.get('/users/all', auth, userController.showUsers);
 
-router.get(
-  '/users/:userId',
-  auth,
-  userController.showOneUser,
-);
+router.get('/users/:userId', auth, userController.showOneUser);
 
-router.delete(
-  '/users/:userId',
-  auth,
-  userController.deleteUser,
-);
-
+router.delete('/users/:userId', auth, userController.deleteUser);
 
 
 module.exports = router;

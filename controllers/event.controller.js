@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const db = require('../models');
 
 
@@ -15,14 +16,18 @@ const EventController = {
       return res.status(500).json({ message: 'Something went wrong while creating new log' });
     }
   },
-  /* BROKEN
+
   showLogs: async (req, res) => {
     try {
       const managedUsers = await db.User.findAll({ where: { managerId: req.manager.managerId } });
+      const userIdArr = [];
+      managedUsers.forEach((element) => {
+        userIdArr.push(element.id);
+      });
       const events = await db.Event.findAll({
         where:
         {
-          userId: { $in: managedUsers },
+          user_id: userIdArr,
         },
       });
       return res.json(events);
@@ -30,7 +35,7 @@ const EventController = {
       return res.status(500).json({ message: `${e}` });
     }
   },
-  */
+
   showLogsByUserId: async (req, res) => {
     try {
       const candidate = await db.User.findByPk(req.params.userId);
@@ -43,28 +48,29 @@ const EventController = {
       return res.status(500).json({ message: `${e}` });
     }
   },
-  /* BROKEN
   showLogsByDate: async (req, res) => {
     try {
-      const managedUsers = await db.User.find({ manager: req.manager.managerId });
-      const events = await db.Event.find({
-        date: {
-          $gte: new Date(req.body.from),
-          $lt: new Date(req.body.to),
-        },
-        userid: {
-          $in: managedUsers,
+      const managedUsers = await db.User.findAll({ where: { managerId: req.manager.managerId } });
+      const userIdArr = [];
+      managedUsers.forEach((element) => {
+        userIdArr.push(element.id);
+      });
+      const events = await db.Event.findAll({
+        where:
+        {
+          user_id: userIdArr,
+          createdAt: {
+            [Op.lt]: new Date(req.body.to),
+            [Op.gt]: new Date(req.body.from),
+          },
         },
       });
-      if (Object.entries(events).length === 0) {
-        throw res.json({ message: 'No content' });
-      }
-      return res.json(events);
+      return res.status(200).json(events);
     } catch (e) {
       return res.status(500).json({ message: 'Invalid date' });
     }
   },
-*/
+
   updateLog: async (req, res) => {
     try {
       const logToCheck = await db.Event.findByPk(req.params.logId);

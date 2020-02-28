@@ -15,6 +15,10 @@ router.post(
   eventController.createLog,
 );
 
+router.get('/logs/all', auth, eventController.showLogs);
+
+router.post('/logs/date', auth, eventController.showLogsByDate);
+
 router.get('/logs/:userId', auth, eventController.showLogsByUserId);
 
 router.put(

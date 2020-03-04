@@ -68,9 +68,12 @@ const userController = {
         return res.status(403).json({ message: 'Premission denied' });
       }
       await db.User.update({
+        ...req.body,
+        /*
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         email: req.body.email,
+        */
       },
       {
         where: {

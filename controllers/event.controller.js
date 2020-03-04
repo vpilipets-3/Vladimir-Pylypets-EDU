@@ -19,16 +19,13 @@ const EventController = {
 
   showLogs: async (req, res) => {
     try {
-      const managedUsers = await db.User.findAll({ where: { managerId: req.manager.managerId } });
-      const userIdArr = [];
-      managedUsers.forEach((element) => {
-        userIdArr.push(element.id);
-      });
       const events = await db.Event.findAll({
-        where:
-        {
-          user_id: userIdArr,
-        },
+        include: [{
+          model: db.User,
+          as: 'event',
+          where:
+            { managerId: req.manager.managerId },
+        }],
       });
       return res.json(events);
     } catch (e) {
@@ -50,20 +47,19 @@ const EventController = {
   },
   showLogsByDate: async (req, res) => {
     try {
-      const managedUsers = await db.User.findAll({ where: { managerId: req.manager.managerId } });
-      const userIdArr = [];
-      managedUsers.forEach((element) => {
-        userIdArr.push(element.id);
-      });
       const events = await db.Event.findAll({
-        where:
-        {
-          user_id: userIdArr,
-          createdAt: {
-            [Op.lt]: new Date(req.body.to),
-            [Op.gt]: new Date(req.body.from),
+        include: [{
+          model: db.User,
+          as: 'event',
+          where:
+          {
+            managerId: req.manager.managerId,
+            createdAt: {
+              [Op.lt]: new Date(req.body.to),
+              [Op.gt]: new Date(req.body.from),
+            },
           },
-        },
+        }],
       });
       return res.status(200).json(events);
     } catch (e) {

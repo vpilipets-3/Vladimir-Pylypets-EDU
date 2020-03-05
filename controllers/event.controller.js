@@ -6,9 +6,14 @@ const EventController = {
   createLog: async (req, res) => {
     const { userId, eventDescription } = req.body;
     try {
-      const candidate = await db.User.findOne({ where: { managerId: req.manager.managerId } });
-      if (candidate.managerId !== req.manager.managerId) {
-        return res.status(403).json({ message: 'Premission denied!' });
+      const singleUser = await db.User.findOne({
+        where: {
+          id: req.params.userId,
+          managerId: req.manager.managerId,
+        },
+      });
+      if (!singleUser) {
+        return res.status(403).json({ message: 'Premission denied' });
       }
       await db.Event.create({ userId, eventDescription });
       return res.status(201).json({ message: 'New log has been created' });

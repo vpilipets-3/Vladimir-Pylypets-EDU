@@ -35,12 +35,21 @@ const EventController = {
 
   showLogsByUserId: async (req, res) => {
     try {
-      const candidate = await db.User.findByPk(req.params.userId);
-      if (candidate.managerId !== req.manager.managerId) {
+      const events = await db.Event.findAll({
+        include: [{
+          model: db.User,
+          as: 'event',
+          where:
+          {
+            id: req.params.userId,
+            managerId: req.manager.managerId,
+          },
+        }],
+      });
+      if (!events) {
         return res.status(403).json({ message: 'Premission denied!' });
       }
-      const Logs = await db.Event.findByAll(req.params.user_id);
-      return res.status(200).json(Logs);
+      return res.status(200).json(events);
     } catch (e) {
       return res.status(500).json({ message: `${e}` });
     }
@@ -69,20 +78,24 @@ const EventController = {
 
   updateLog: async (req, res) => {
     try {
-      const logToCheck = await db.Event.findByPk(req.params.logId);
-      const userToCheck = await db.User.findByPk(logToCheck.userId);
-      console.log(userToCheck);
-      if (userToCheck.managerId !== req.manager.managerId) {
+      const event = await db.Event.findOne({
+        where: { id: req.params.logId },
+        include: [{
+          model: db.User,
+          as: 'event',
+          where:
+          {
+            managerId: req.manager.managerId,
+          },
+        }],
+      });
+      if (!event) {
         return res.status(403).json({ message: 'Premission denied!' });
       }
-      await db.Event.update({
-        eventDescription: req.body.eventDescription,
-      },
-      {
-        where: {
-          id: req.params.logId,
-        },
-      });
+      await db.Event.update({ eventDescription: req.body.eventDescription },
+        {
+          where: { id: req.params.logId },
+        });
       return res.status(201).json({ message: 'Log has been updated' });
     } catch (e) {
       return res.status(500).json({ message: `${e}` });

@@ -36,8 +36,13 @@ const userController = {
   },
   showOneUser: async (req, res) => {
     try {
-      const singleUser = await db.User.findByPk(req.params.userId);
-      if (singleUser.managerId !== req.manager.managerId) {
+      const singleUser = await db.User.findOne({
+        where: {
+          id: req.params.userId,
+          managerId: req.manager.managerId,
+        },
+      });
+      if (!singleUser) {
         return res.status(403).json({ message: 'Premission denied' });
       }
       return res.json(singleUser);
@@ -47,8 +52,13 @@ const userController = {
   },
   deleteUser: async (req, res) => {
     try {
-      const candidate = await db.User.findByPk(req.params.userId);
-      if (candidate.managerId !== req.manager.managerId) {
+      const singleUser = await db.User.findOne({
+        where: {
+          id: req.params.userId,
+          managerId: req.manager.managerId,
+        },
+      });
+      if (!singleUser) {
         return res.status(403).json({ message: 'Premission denied' });
       }
       await db.User.destroy({
@@ -63,24 +73,22 @@ const userController = {
   },
   updateUser: async (req, res) => {
     try {
-      const user = await db.User.findByPk(req.params.userId);
-      if (user.managerId !== (req.manager.managerId)) {
-        return res.status(403).json({ message: 'Premission denied' });
-      }
-      await db.User.update({
-        ...req.body,
-        /*
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        email: req.body.email,
-        */
-      },
-      {
+      const singleUser = await db.User.findOne({
         where: {
           id: req.params.userId,
+          managerId: req.manager.managerId,
         },
       });
-      return res.json(user);
+      if (!singleUser) {
+        return res.status(403).json({ message: 'Premission denied' });
+      }
+      await db.User.update({ ...req.body },
+        {
+          where: {
+            id: req.params.userId,
+          },
+        });
+      return res.json(singleUser);
     } catch (e) {
       return res.status(500).json({ message: 'Internal server error' });
     }

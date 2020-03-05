@@ -28,6 +28,7 @@ const EventController = {
         include: [{
           model: db.User,
           as: 'event',
+          attributes: [],
           where:
             { managerId: req.manager.managerId },
         }],
@@ -44,6 +45,7 @@ const EventController = {
         include: [{
           model: db.User,
           as: 'event',
+          attributes: [],
           where:
           {
             id: req.params.userId,
@@ -65,6 +67,7 @@ const EventController = {
         include: [{
           model: db.User,
           as: 'event',
+          attributes: [],
           where:
           {
             managerId: req.manager.managerId,
@@ -88,6 +91,7 @@ const EventController = {
         include: [{
           model: db.User,
           as: 'event',
+          attributes: [],
           where:
           {
             managerId: req.manager.managerId,

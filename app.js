@@ -21,4 +21,4 @@ const connect = async () => {
 
 connect();
 
-app.use('/api', require('./routes/auth.route'), require('./routes/user.route'), require('./routes/events.route'));
+app.use('/api', require('./routes/auth.route'), require('./routes/user.route'), require('./routes/events.route'), require('./routes/upload.route'));

@@ -1,0 +1,794 @@
+{
+	"info": {
+		"_postman_id": "ee6cce75-2432-4eec-b24c-1eba16ed7ab4",
+		"name": "Node.JS Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login test",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ba685f92-67e2-440e-9072-8af0474c1953",
+						"exec": [
+							"const jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"token\", jsonData.token);",
+							"",
+							"pm.test(\"Fields must be filled\", () => {",
+							"    const requestBody = JSON.parse(pm.request.body.raw);",
+							"    pm.expect(requestBody.email).exist;",
+							"    pm.expect(requestBody.password).exist;",
+							"});",
+							"",
+							"pm.test(\"Password must contain at least 6 chars\", () => {",
+							"    const requestBody = JSON.parse(pm.request.body.raw);",
+							"     pm.expect(requestBody.password).length >= 6;",
+							"});",
+							"",
+							"pm.test(\"User should be registered\", () => {",
+							"        const data = pm.response.json();",
+							"        pm.expect(data.message).to.not.be.eql(\"Manager with these credentials doesn\\'t exist\");",
+							"});",
+							"",
+							"pm.test(\"Login test\",  () => {",
+							"    const data = pm.response.json();",
+							"    pm.response.to.have.status(200);",
+							"    pm.expect(data.token).exist;",
+							"    token = data.token;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "d1275dd6-9c65-4ff7-98cc-e50d88787872",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"manager@gmail.com\",\n\t\"password\": \"111111\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateUser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9864ce06-18e5-4cdf-81f3-65bf0aeb540c",
+						"exec": [
+							"pm.test(\"Fields must be filled\", () => {",
+							"    const requestBody = JSON.parse(pm.request.body.raw);",
+							"    pm.expect(requestBody.email).exist;",
+							"    pm.expect(requestBody.password).exist;",
+							"    pm.expect(requestBody.firstName).exist;",
+							"    pm.expect(requestBody.lastName).exist;",
+							"});",
+							"",
+							"pm.test(\"Password must contain at least 6 chars\", () => {",
+							"    const requestBody = JSON.parse(pm.request.body.raw);",
+							"     pm.expect(requestBody.password).length >= 6;",
+							"});",
+							"",
+							"pm.test(\"User should be unique\", () => {",
+							"        const data = pm.response.json();",
+							"        pm.expect(data.message).to.not.be.eql(\"User with simillar email already exists\");",
+							"});",
+							"",
+							"pm.test(\"Created\",  () => {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "a05b4994-ac8d-42d1-9052-7acc912ee176",
+						"exec": [
+							"pm.environment.set(\"randomEmail\", _.random(1,1000));",
+							"pm.environment.set(\"randomPassword\", _.random(111111,999999));",
+							"pm.environment.set(\"randomFirstName\",  _.random(1,50));",
+							"pm.environment.set(\"randomLastName\",  _.random(1,50));",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"{{randomEmail}}@gmail.com\",\n\t\"password\": \"{{radomPassword}}\",\n\t\"firstName\": \"Karl{{randomFirstName}}\",\n\t\"lastName\": \"Clone{{randomLastName}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/createUser",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"createUser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ShowAllUsers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6c46b994-0b06-44d7-8171-72e99764c56b",
+						"exec": [
+							"pm.test(\"Manager must have premissions\", () => {",
+							"        const data = pm.response.json();",
+							"        pm.expect(data.message).to.not.be.eql(\"Premission denied\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Status 200 - OK)\", () => {",
+							"       pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response must be valid and have a body\", () => {",
+							"     pm.response.to.be.ok;",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"User must have email and password\", () => {",
+							"   const users = pm.response.json();",
+							"   pm.expect(users.every((user) => {",
+							"      return user.email !== undefined &&  user.password !== undefined;",
+							"   })).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Response must contain info only for current manager\", () => {",
+							"        const data = pm.response.json();",
+							"       pm.expect(data.forEach(element => element.managerId === data[0].managerId));",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/users/all",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ShowOneUser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "94a51ac7-035d-4c51-9d69-ddc90941c136",
+						"exec": [
+							"pm.test(\"Manager must have premissions\", () => {",
+							"        const data = pm.response.json();",
+							"        pm.expect(data.message).to.not.be.eql(\"Premission denied\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Status 200 - OK)\", () => {",
+							"       pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response must be valid and have a body\", () => {",
+							"     pm.response.to.be.ok;",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"});",
+							"",
+							"pm.test(\"User must have email and password\", () => {",
+							"   const user = pm.response.json();",
+							"   pm.expect(user.email !== undefined &&  user.password !== undefined).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Response must contain info only for current manager\", () => {",
+							"        const data = pm.response.json();",
+							"       pm.expect(data.managerId === request.managerId);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/users/13",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users",
+						"13"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteUser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "04e4f70d-8a83-49be-acd2-de3e48a9c39e",
+						"exec": [
+							"pm.test(\"Manager must have premissions\", () => {",
+							"        const data = pm.response.json();",
+							"        pm.expect(data.message).to.not.be.eql(\"Premission denied\");",
+							"});",
+							"",
+							"pm.test(\"Status 204 - No content)\", () => {",
+							"       pm.response.to.have.status(204);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/users/13",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users",
+						"13"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateUser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2e899f06-5b4d-49b6-ada3-322ebdceed59",
+						"exec": [
+							"pm.test(\"Manager must have premissions\", () => {",
+							"        const data = pm.response.json();",
+							"        pm.expect(data.message).to.not.be.eql(\"Premission denied\");",
+							"});",
+							"",
+							"pm.test(\"Fields must be filled\", () => {",
+							"    const requestBody = JSON.parse(pm.request.body.raw);",
+							"    pm.expect(requestBody.email).exist;",
+							"    pm.expect(requestBody.firstName).exist;",
+							"    pm.expect(requestBody.lastName).exist;",
+							"});",
+							"",
+							"pm.test(\"Satus 200 - OK\", () => {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"{{randomEmail}}@gmail.com\",\n\t\"firstName\": \"Karl{{randomFirstName}}\",\n\t\"lastName\": \"Clone{{randomLastName}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/users/12",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"users",
+						"12"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "createLog",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cdbb1482-9aca-4934-bde4-370c0db081b2",
+						"exec": [
+							"pm.test(\"Manager must have premissions\", () => {",
+							"        const data = pm.response.json();",
+							"        pm.expect(data.message).to.not.be.eql(\"Premission denied\");",
+							"});",
+							"",
+							"pm.test(\"Fields must be filled\", () => {",
+							"    const requestBody = JSON.parse(pm.request.body.raw);",
+							"    pm.expect(requestBody.userId).exist;",
+							"    pm.expect(requestBody.eventDescription).exist;",
+							"",
+							"});",
+							"",
+							"pm.test(\"Status 201 - Created\",  () => {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"userId\": \"12\",\n\t\"eventDescription\": \"some text\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/createLog",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"createLog"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ShowAllLogs",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b5642271-34e7-42ce-a6a9-34a7d04fc3b9",
+						"exec": [
+							"pm.test(\"Manager must have premissions\", () => {",
+							"        const data = pm.response.json();",
+							"        pm.expect(data.message).to.not.be.eql(\"Premission denied\");",
+							"});",
+							"",
+							"pm.test(\"Status 200 - OK\", () => {",
+							"       pm.response.to.have.status(200);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/logs/all",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"logs",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ShowLogsByUserId",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "97bf9e41-cecf-4a6c-9287-5f4fcb14c0b7",
+						"exec": [
+							"pm.test(\"Manager must have premissions\", () => {",
+							"        const data = pm.response.json();",
+							"        pm.expect(data.message).to.not.be.eql(\"Premission denied\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Logs must have proper userId\", () => {",
+							"   const logs = pm.response.json();",
+							"   pm.expect(logs.every((log) => {",
+							"      return log.userId === 12;",
+							"   })).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Status 200 - OK\", () => {",
+							"       pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/logs/12",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"logs",
+						"12"
+					],
+					"query": [
+						{
+							"key": "ID",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ShowLogsByDate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "1afed3c1-9879-4596-acbe-8ccd29ff5192",
+						"exec": [
+							"pm.test(\"Manager must have premissions\", () => {",
+							"        const data = pm.response.json();",
+							"        pm.expect(data.message).to.not.be.eql(\"Premission denied\");",
+							"});",
+							"",
+							"pm.test(\"Logs must include date\", () => {",
+							"   const logs = pm.response.json();",
+							"   pm.expect(logs.every((log) => {",
+							"      return log.cratedAt !== undefined;",
+							"   })).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Status 200 - OK\", () => {",
+							"       pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"from\": \"2020-02-25\",\n\t\"to\": \"2020-03-30\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/logs/date",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"logs",
+						"date"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "updateLog",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "06ebb55f-0426-443e-a5af-df6a7afff893",
+						"exec": [
+							"pm.test(\"Manager must have premissions\", () => {",
+							"        const data = pm.response.json();",
+							"        pm.expect(data.message).to.not.be.eql(\"Premission denied\");",
+							"});",
+							"",
+							"pm.test(\"Status 201 - Created\", () => {",
+							"       pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Description must be filled\", () => {",
+							"    const requestBody = JSON.parse(pm.request.body.raw);",
+							"    pm.expect(requestBody.eventDescription).exist;",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\t\"eventDescription\": \"{{$randomString}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/logs/14",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"logs",
+						"14"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

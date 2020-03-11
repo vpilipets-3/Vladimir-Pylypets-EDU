@@ -10,7 +10,7 @@ const userController = {
       const candidate = await db.User.findOne({ where: { email: req.body.email } });
 
       if (candidate) {
-        return res.status(400).json({ message: 'User with simillar email already exists' });
+        return res.status(409).json({ message: 'User with simillar email already exists' });
       }
       const hashedPassword = await bcrypt.hash(password, 12);
       await db.User.create({
